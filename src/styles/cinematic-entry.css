@@ -125,7 +125,7 @@
   left: 50%;
   bottom: 18%;
   translate: -50% 0;
-  transform-origin: 50% 50%;
+  transform-origin: 50% 100%;
 }
 
 /* Archer */
@@ -628,7 +628,7 @@
   z-index: 2;
   width: min(calc(100vw - 1.5rem), 30rem);
   translate: -50% -50%;
-  transform-origin: 50% 100%;
+  transform-origin: 50% 50%;
   pointer-events: none;
   perspective: 800px;
   will-change: transform, opacity;
