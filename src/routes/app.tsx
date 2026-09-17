@@ -487,6 +487,7 @@ function ChatPage() {
             <Button
               variant="ghost"
               size="icon"
+              aria-label="Close chat list"
               className="lg:hidden"
               onClick={() => setShowList(false)}
             >

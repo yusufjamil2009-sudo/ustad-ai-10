@@ -168,6 +168,7 @@ function NotesPage() {
                     {n.title}
                   </button>
                   <button
+                    aria-label={`Delete note: ${n.title}`}
                     onClick={async () => {
                       await deleteRowFn({ data: { token, table: "notes", id: n.id } });
                       if (active?.id === n.id) setActive(null);
