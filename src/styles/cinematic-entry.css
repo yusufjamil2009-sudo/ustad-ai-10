@@ -319,6 +319,7 @@
   translate: -50% -50%;
   opacity: 0;
   transform-origin: 50% 100%;
+  z-index: 3;
 }
 
 .ce-overlay[data-phase="case"] .ce-case,
@@ -619,14 +620,13 @@
 }
 
 /* ---------------- card rising out of the suitcase ---------------- */
-/* Visual only: this is the bridge shot so the reveal never cuts off
-   between the opened suitcase and the real Guest ID card. */
+/* The existing real Guest ID is the card that rises from the case. */
 .ce-rise-card {
   position: absolute;
   left: 50%;
-  top: 62%;
+  top: 50%;
+  z-index: 2;
   width: min(calc(100vw - 1.5rem), 30rem);
-  height: min(36rem, calc(100dvh - 3rem));
   translate: -50% -50%;
   transform-origin: 50% 100%;
   pointer-events: none;
@@ -637,15 +637,16 @@
 }
 
 @keyframes ce-rise-card {
-  0% { opacity: 0; transform: translate3d(0, 8rem, 0) scale(0.24); }
-  18% { opacity: 1; }
-  68% { opacity: 1; transform: translate3d(0, -7rem, 0) scale(0.72); }
-  100% { opacity: 1; transform: translate3d(0, -10%, 0) scale(1); }
+  0% { opacity: 0.18; transform: translate3d(0, 23vh, 0) scale(0.3); }
+  12% { opacity: 0.72; transform: translate3d(0, 20vh, 0) scale(0.34); }
+  46% { opacity: 1; transform: translate3d(0, 8vh, 0) scale(0.58); }
+  76% { opacity: 1; transform: translate3d(0, -1.2rem, 0) scale(0.88); }
+  90% { opacity: 1; transform: translate3d(0, 0.35rem, 0) scale(0.98); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 
 .ce-rise-glass {
-  position: absolute;
-  inset: 0;
+  position: relative;
   border-radius: 1.3rem;
   border: 1px solid oklch(0.96 0.03 225 / 0.5);
   background: linear-gradient(150deg, oklch(1 0 0 / 0.22), oklch(0.8 0.06 230 / 0.1) 50%, oklch(1 0 0 / 0.16));
@@ -657,30 +658,41 @@
 }
 
 @keyframes ce-rise-tilt {
-  0% { transform: rotateX(46deg) rotateZ(-6deg); }
-  70% { transform: rotateX(4deg) rotateZ(1deg); }
+  0% { transform: rotateX(34deg) rotateZ(-3deg); }
+  70% { transform: rotateX(3deg) rotateZ(0.5deg); }
   100% { transform: rotateX(0deg) rotateZ(0deg); }
 }
 
-.ce-rise-line {
-  position: absolute;
-  left: 12%;
-  height: 0.5rem;
-  border-radius: 999px;
-  background: oklch(1 0 0 / 0.35);
+.ce-rise-content {
+  opacity: 0;
+  animation: ce-rise-content 1.85s cubic-bezier(0.22, 0.8, 0.28, 1) both;
 }
 
-.ce-rise-line.a { top: 62%; width: 58%; }
-.ce-rise-line.b { top: 72%; width: 40%; }
+.ce-rise-content > * {
+  min-height: 0 !important;
+  background: transparent !important;
+}
 
-.ce-rise-chip {
+@keyframes ce-rise-content {
+  0%, 28% { opacity: 0; transform: scale(0.97); }
+  62% { opacity: 0.42; }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Foreground lip: it hides the lower card until the card clears the case. */
+.ce-case-front {
   position: absolute;
-  left: 12%;
-  top: 16%;
-  width: 3.2rem;
-  height: 2.4rem;
-  border-radius: 0.5rem;
-  background: linear-gradient(140deg, oklch(0.88 0.12 92 / 0.85), oklch(0.7 0.1 92 / 0.55));
+  left: 50%;
+  top: 62%;
+  z-index: 4;
+  width: clamp(8rem, 34vw, 15rem);
+  aspect-ratio: 8 / 2.35;
+  translate: -50% 0;
+  border: 1px solid oklch(0.85 0.05 225 / 0.45);
+  border-radius: 0.25rem 0.25rem 0.9rem 0.9rem;
+  background: linear-gradient(170deg, oklch(0.42 0.04 245), oklch(0.19 0.03 250) 62%, oklch(0.26 0.03 250));
+  box-shadow: inset 0 0 1.5rem oklch(0.85 0.1 225 / 0.12);
+  pointer-events: none;
 }
 
 .ce-rise-beam {
@@ -756,6 +768,7 @@
   .ce-id-wrap { padding-inline: 0.6rem; }
   .ce-id-card { border-radius: 1.25rem; }
   .ce-id-inner { border-radius: 1rem; }
+  .ce-rise-card { width: min(calc(100vw - 1.2rem), 30rem); }
 }
 
 @media (max-height: 700px) {

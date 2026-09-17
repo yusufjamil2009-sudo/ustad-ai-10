@@ -38,7 +38,7 @@ import {
 } from "@/lib/identity-spec";
 import { useIdentityLanguage } from "@/lib/identity-language";
 import { JOURNEY_FLAG_KEY, JOURNEY_NAME_KEY } from "@/components/entry/JourneyCinematic";
-import { ENTRY_REVEAL_KEY } from "@/components/entry/CinematicEntry";
+import { ENTRY_REVEAL_KEY } from "@/components/entry/entry-flags";
 import {
   claimCurrentIdentity,
   createIdentity,

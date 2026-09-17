@@ -7,19 +7,9 @@
  * route it was given.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
+import { IdentityScreen } from "@/components/IdentityScreen";
 
 export type EntryPhase = "draw" | "travel" | "reveal" | "case" | "open" | "card";
-
-/** Session flag read once by the Guest ID stage to play the glass-card reveal. */
-export const ENTRY_REVEAL_KEY = "ustad.entryCinema";
-
-export function markCinematicReveal(): void {
-  try {
-    window.sessionStorage.setItem(ENTRY_REVEAL_KEY, "1");
-  } catch {
-    /* best effort — the app works identically without it */
-  }
-}
 
 const TIMELINE: Array<{ phase: EntryPhase; at: number }> = [
   { phase: "travel", at: 1700 },
@@ -159,13 +149,15 @@ export function CinematicEntry({ onDone }: { onDone: () => void }) {
             }}
           >
             <span className="ce-rise-beam" />
-            <span className="ce-rise-glass">
-              <span className="ce-rise-line a" />
-              <span className="ce-rise-line b" />
-              <span className="ce-rise-chip" />
-            </span>
+            <div className="ce-rise-glass ce-id-card">
+              <div className="ce-id-inner ce-rise-content">
+                <IdentityScreen />
+              </div>
+            </div>
           </div>
         ) : null}
+
+        {phase === "card" ? <span className="ce-case-front" aria-hidden="true" /> : null}
       </div>
 
       <div className="ce-vignette" aria-hidden="true" />
