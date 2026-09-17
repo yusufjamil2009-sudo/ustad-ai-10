@@ -205,6 +205,7 @@ function RemindersPage() {
               </div>
               <div className="flex items-center gap-2">
                 <button
+                  aria-label={isDone(r) ? "Mark reminder as not done" : "Mark reminder as done"}
                   onClick={async () => {
                     await updateRowFn({
                       data: {
@@ -222,6 +223,7 @@ function RemindersPage() {
                   />
                 </button>
                 <button
+                  aria-label="Delete reminder"
                   onClick={async () => {
                     await deleteRowFn({ data: { token, table: "reminders", id: r.id } });
                     await refresh();
