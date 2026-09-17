@@ -345,6 +345,11 @@ function ChatPage() {
       if (nextMode && completedAssistant) {
         setDeliveringMessageId(completedAssistant.id);
         setDeliveryPhase("thinking-exit");
+      } else if (nextMode) {
+        // Presentation fallback: a malformed/missing visual target must never
+        // leave the chat covered or interfere with the real response.
+        setDeliveringMessageId(null);
+        setDeliveryPhase("idle");
       }
       setStatus(
         `${res.status.provider} · ${res.status.model} · ${res.status.intent}` +
