@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Loader2,
@@ -36,6 +36,7 @@ import { useSettings, saveProfilePatch } from "@/lib/settings-store";
 import { useIdentityLanguage } from "@/lib/identity-language";
 import { errorText, identityText } from "@/lib/identity-spec";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { CinematicEntry } from "@/components/entry/CinematicEntry";
 import { setNextMode } from "@/lib/next-mode";
 import { crorepatiProfileStatsFn, crorepatiEntryProfileStatsFn } from "@/lib/crorepati.functions";
 import { walletPanelFn } from "@/lib/wallet.functions";
@@ -875,23 +876,38 @@ function PrefsPanel() {
 }
 
 function NextModeEntry() {
+  const navigate = useNavigate();
+  const [opening, setOpening] = useState(false);
+
+  const finishOpening = useCallback(() => {
+    setNextMode(true);
+    void navigate({ to: "/next" });
+  }, [navigate]);
+
   return (
-    <div className="nx-pref-entry">
-      <span className="nx-pref-icon" aria-hidden="true">
-        <Sparkles className="size-5" />
-      </span>
-      <div className="min-w-0 space-y-2">
-        <p className="font-display text-sm font-semibold">NEW USTAD AI</p>
-        <p className="text-xs text-muted-foreground">Experience the next generation of USTAD AI</p>
-        <Link
-          to="/next"
-          onClick={() => setNextMode(true)}
-          className="inline-flex min-h-10 items-center gap-2 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground transition-transform active:scale-95"
-        >
-          OPEN NEW USTAD AI <ArrowRight className="size-4" />
-        </Link>
+    <>
+      <div className="nx-pref-entry">
+        <span className="nx-pref-icon" aria-hidden="true">
+          <Sparkles className="size-5" />
+        </span>
+        <div className="min-w-0 space-y-2">
+          <p className="font-display text-sm font-semibold">NEW USTAD AI</p>
+          <p className="text-xs text-muted-foreground">Experience the next generation of USTAD AI</p>
+          <Link
+            to="/next"
+            aria-disabled={opening}
+            onClick={(event) => {
+              event.preventDefault();
+              if (!opening) setOpening(true);
+            }}
+            className="inline-flex min-h-10 items-center gap-2 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground transition-transform active:scale-95 aria-disabled:pointer-events-none aria-disabled:opacity-60"
+          >
+            OPEN NEW USTAD AI <ArrowRight className="size-4" />
+          </Link>
+        </div>
       </div>
-    </div>
+      {opening ? <CinematicEntry onDone={finishOpening} /> : null}
+    </>
   );
 }
 
