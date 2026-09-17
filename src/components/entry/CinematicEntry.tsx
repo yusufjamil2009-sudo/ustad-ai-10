@@ -6,7 +6,7 @@
  * or is skipped, or fails/times out — it simply hands over to the existing
  * route it was given.
  */
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type EntryPhase = "draw" | "travel" | "reveal" | "case" | "open" | "card";
 
@@ -55,14 +55,14 @@ export function CinematicEntry({ onDone }: { onDone: () => void }) {
   const [closing, setClosing] = useState(false);
   const finished = useRef(false);
 
-  useEffect(() => {
-    const finish = () => {
-      if (finished.current) return;
-      finished.current = true;
-      setClosing(true);
-      window.setTimeout(onDone, 80);
-    };
+  const finish = useCallback(() => {
+    if (finished.current) return;
+    finished.current = true;
+    setClosing(true);
+    window.setTimeout(onDone, 80);
+  }, [onDone]);
 
+  useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
       finish();
@@ -82,13 +82,10 @@ export function CinematicEntry({ onDone }: { onDone: () => void }) {
       timers.forEach((t) => window.clearTimeout(t));
       window.removeEventListener("keydown", skipOnKey);
     };
-  }, [onDone]);
+  }, [finish]);
 
   const skip = () => {
-    if (finished.current) return;
-    finished.current = true;
-    setClosing(true);
-    window.setTimeout(onDone, 260);
+    finish();
   };
 
   return (
