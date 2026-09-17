@@ -127,7 +127,10 @@ export function ChatDeliveryLayer({
       const actorHeight = mobile
         ? Math.min(Math.max(rootSize * 8.2, window.innerHeight * 0.2), rootSize * 10.8)
         : Math.min(Math.max(rootSize * 9.6, window.innerHeight * 0.25), rootSize * 15.5);
-      const actorLeft = stageRect.left + (mobile ? rootSize * 0.35 : Math.min(Math.max(rootSize * 0.4, window.innerWidth * 0.04), rootSize * 3));
+      const actorInset = mobile
+        ? rootSize * 0.35
+        : Math.min(Math.max(rootSize * 0.4, window.innerWidth * 0.04), rootSize * 3);
+      const actorLeft = stageRect.right - actorInset - actorWidth;
       const actorTop = stageRect.top + stageRect.height * 0.58 - actorHeight / 2;
       const carryLeft = actorLeft + actorWidth * 0.28;
       const carryTop = actorTop + actorHeight * 0.08;
@@ -138,7 +141,7 @@ export function ChatDeliveryLayer({
       card.style.setProperty("--nx-carry-y", `${carryTop - cardRect.top}px`);
       card.style.setProperty("--nx-front-x", `${frontLeft - cardRect.left}px`);
       card.style.setProperty("--nx-front-y", `${frontTop - cardRect.top}px`);
-      card.style.setProperty("--nx-entry-shift", `${actorWidth * -1.5}px`);
+      card.style.setProperty("--nx-entry-shift", `${actorWidth * 1.5}px`);
     });
 
     return () => window.cancelAnimationFrame(frame);
