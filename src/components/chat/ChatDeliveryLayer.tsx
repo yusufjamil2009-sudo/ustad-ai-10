@@ -97,15 +97,15 @@ export function ChatDeliveryLayer({
   useEffect(() => {
     if (phase === "idle" || phase === "thinking-active") return;
     const durations: Partial<Record<ChatDeliveryPhase, number>> = {
-      "thinking-enter": 850,
-      "thinking-exit": 700,
-      "delivery-enter": 1050,
-      "card-present": 650,
+      "thinking-enter": 880,
+      "thinking-exit": 760,
+      "delivery-enter": 1100,
+      "card-present": 680,
       "card-kick": 560,
-      "card-flight": 900,
-      "delivery-exit": 760,
+      "card-flight": 940,
+      "delivery-exit": 780,
     };
-    const id = window.setTimeout(onAdvance, (durations[phase] ?? 900) + 180);
+    const id = window.setTimeout(onAdvance, (durations[phase] ?? 900) + 60);
     return () => window.clearTimeout(id);
   }, [onAdvance, phase]);
 
