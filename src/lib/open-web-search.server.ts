@@ -204,15 +204,110 @@ export async function openWebSearch(query: string, limit = 5): Promise<OpenWebSe
   return { results: [], source: null, failures };
 }
 
+/* ------------------------------------------------------------------ */
+/* SSRF protection for user-supplied URLs                              */
+/* ------------------------------------------------------------------ */
+
+/** Hostnames that must never be fetched from the server. */
+const BLOCKED_HOST_PATTERNS = [
+  /^localhost$/i,
+  /\.localhost$/i,
+  /^metadata(\.google\.internal)?$/i,
+  /\.internal$/i,
+  /\.local$/i,
+  /\.home\.arpa$/i,
+];
+
+function isPrivateIpv4(host: string): boolean {
+  const m = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (!m) return false;
+  const parts = m.slice(1, 5).map((p) => Number(p));
+  if (parts.some((n) => Number.isNaN(n) || n > 255)) return true; // malformed → reject
+  const [a = 0, b = 0] = parts;
+  if (a === 0 || a === 10 || a === 127) return true;
+  if (a === 169 && b === 254) return true; // link-local / cloud metadata
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true; // CGNAT
+  if (a >= 224) return true; // multicast / reserved
+  return false;
+}
+
+function isPrivateIpv6(host: string): boolean {
+  const h = host.replace(/^\[|\]$/g, "").toLowerCase();
+  if (!h.includes(":")) return false;
+  if (h === "::" || h === "::1") return true;
+  if (/^f[cd][0-9a-f]{2}:/.test(h)) return true; // unique local
+  if (/^fe[89ab][0-9a-f]:/.test(h)) return true; // link-local
+  // IPv4-mapped: ::ffff:127.0.0.1
+  const mapped = h.match(/::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/);
+  if (mapped?.[1] && isPrivateIpv4(mapped[1])) return true;
+  return false;
+}
+
+/**
+ * Reject anything that is not a plainly public http(s) destination:
+ * loopback, link-local (cloud metadata), private ranges, bare/internal
+ * hostnames, credentials in the URL, and non-standard ports.
+ */
+function assertPublicUrl(raw: string): URL {
+  let parsed: URL;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    throw new Error("That web address could not be read.");
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:")
+    throw new Error("Only http(s) URLs can be read.");
+  if (parsed.username || parsed.password)
+    throw new Error("That web address could not be read.");
+
+  const port = parsed.port;
+  if (port && port !== "80" && port !== "443")
+    throw new Error("That web address could not be read.");
+
+  const host = parsed.hostname.toLowerCase().replace(/\.$/, "");
+  if (!host) throw new Error("That web address could not be read.");
+  if (isPrivateIpv4(host) || isPrivateIpv6(host))
+    throw new Error("That web address could not be read.");
+  if (BLOCKED_HOST_PATTERNS.some((re) => re.test(host)))
+    throw new Error("That web address could not be read.");
+  // A hostname with no dot is an internal/short name, not a public site.
+  if (!host.includes(".")) throw new Error("That web address could not be read.");
+
+  return parsed;
+}
+
 /**
  * Keyless page read: fetches the URL server-side and returns readable text.
  * Used only when no reader provider (Jina / Firecrawl) is configured or all of
  * them failed. Non-HTML and error responses are reported, never faked.
+ *
+ * SSRF-hardened: the target and every redirect hop must be a public http(s)
+ * destination, so chat text can never make the server read loopback,
+ * link-local (cloud metadata) or private-network addresses.
  */
 export async function openWebRead(url: string): Promise<string> {
-  if (!/^https?:\/\//i.test(url)) throw new Error("Only http(s) URLs can be read.");
-  const res = await get(url, { headers: { accept: "text/html,text/plain;q=0.9" } });
-  if (!res.ok) throw new Error(`${new URL(url).hostname} returned ${res.status}`);
+  let current = assertPublicUrl(url);
+
+  let res: Response | null = null;
+  for (let hop = 0; hop < 5; hop++) {
+    const hopRes = await get(current.toString(), {
+      headers: { accept: "text/html,text/plain;q=0.9" },
+      redirect: "manual",
+    });
+    if (hopRes.status >= 300 && hopRes.status < 400) {
+      const location = hopRes.headers.get("location");
+      if (!location) throw new Error(`${current.hostname} returned ${hopRes.status}`);
+      current = assertPublicUrl(new URL(location, current).toString());
+      continue;
+    }
+    res = hopRes;
+    break;
+  }
+  if (!res) throw new Error(`${current.hostname} redirected too many times.`);
+
+  if (!res.ok) throw new Error(`${current.hostname} returned ${res.status}`);
   const type = res.headers.get("content-type") ?? "";
   const body = await res.text();
   if (/json/.test(type)) return body.slice(0, 8000);
@@ -221,6 +316,6 @@ export async function openWebRead(url: string): Promise<string> {
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<noscript[\s\S]*?<\/noscript>/gi, " ");
   const text = stripTags(main);
-  if (!text) throw new Error(`${new URL(url).hostname} returned no readable text.`);
+  if (!text) throw new Error(`${current.hostname} returned no readable text.`);
   return text.slice(0, 8000);
 }
