@@ -10,3 +10,4 @@
 - [x] Validate response actions, reduced motion, and 360–430px chat layouts.
 - [x] Replace placeholder chat figures with cohesive original futuristic characters.
 - [x] Validate the real content-sized glass response card and full mobile sequence.
+- [x] Correct shoulder carry, single-kick contact, and forward response-card flight without changing character sides.

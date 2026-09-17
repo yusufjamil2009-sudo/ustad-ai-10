@@ -635,8 +635,8 @@
   will-change: transform, opacity;
 }
 
-.nx-chat-thinking-actor { left: clamp(0.5rem, 5vw, 4rem); }
-.nx-chat-delivery-actor { right: clamp(0.6rem, 6vw, 5rem); top: 57%; }
+.nx-chat-thinking-actor { right: clamp(0.5rem, 5vw, 4rem); }
+.nx-chat-delivery-actor { left: clamp(0.6rem, 6vw, 5rem); top: 57%; }
 
 .nx-chat-person {
   position: absolute;
@@ -699,6 +699,11 @@
 .nx-chat-cinema[data-phase="delivery-enter"] .nx-chat-delivery-actor {
   animation: nx-delivery-enter 920ms cubic-bezier(0.2, 0.78, 0.25, 1) both;
 }
+.nx-chat-cinema[data-phase="delivery-enter"] .nx-figure-front-arm,
+.nx-chat-cinema[data-phase="delivery-enter"] .nx-figure-back-arm {
+  animation: nx-courier-support 460ms ease-in-out infinite alternate;
+  transform-origin: 80px 118px;
+}
 .nx-chat-cinema[data-phase="card-present"] .nx-chat-delivery-actor {
   animation: nx-delivery-present 560ms ease-out both;
 }
@@ -716,25 +721,26 @@
 }
 
 .nx-app [data-chat-message="assistant"][data-delivering="true"] {
-  transform-origin: 0 55%;
-  will-change: transform, opacity;
+  --nx-carry-x: 0px;
+  --nx-carry-y: 0px;
+  --nx-front-x: 0px;
+  --nx-front-y: 0px;
+  --nx-entry-shift: -7rem;
+  transform-origin: 0 0;
+  will-change: transform, opacity, filter;
+  z-index: 14;
 }
 .nx-app [data-delivery-phase="thinking-exit"] [data-delivering="true"] {
   visibility: hidden;
 }
 .nx-app [data-delivery-phase="delivery-enter"] [data-delivering="true"] {
-  opacity: 0;
-  transform: translate3d(-42vw, 8vh, 0) scale(0.2);
+  animation: nx-card-carry 920ms cubic-bezier(0.2, 0.78, 0.25, 1) both;
 }
 .nx-app [data-delivery-phase="card-present"] [data-delivering="true"] {
-  opacity: 0.76;
-  transform: translate3d(clamp(-18rem, -31vw, -7rem), 7vh, 0) scale(0.3) rotate(-2deg);
-  transition: opacity 480ms ease, transform 560ms ease;
+  animation: nx-card-to-front 560ms cubic-bezier(0.22, 0.75, 0.25, 1) both;
 }
 .nx-app [data-delivery-phase="card-kick"] [data-delivering="true"] {
-  opacity: 0.92;
-  transform: translate3d(clamp(-11rem, -18vw, -4rem), 4vh, 0) scale(0.42) rotate(1deg);
-  transition: opacity 420ms ease, transform 480ms cubic-bezier(0.2, 0.75, 0.25, 1);
+  animation: nx-card-contact 480ms cubic-bezier(0.3, 0.75, 0.3, 1) both;
 }
 .nx-app [data-delivery-phase="card-flight"] [data-delivering="true"] {
   animation: nx-response-flight 760ms cubic-bezier(0.16, 0.84, 0.3, 1) both;
@@ -745,7 +751,7 @@
 }
 
 @keyframes nx-thinker-enter {
-  from { opacity: 0; transform: translate3d(-135%, -50%, 0); }
+  from { opacity: 0; transform: translate3d(135%, -50%, 0); }
   to { opacity: 1; transform: translate3d(0, -50%, 0); }
 }
 @keyframes nx-thinker-work {
@@ -758,11 +764,11 @@
 }
 @keyframes nx-thinker-exit {
   from { opacity: 1; transform: translate3d(0, -50%, 0); }
-  to { opacity: 0; transform: translate3d(-145%, -50%, 0); }
+  to { opacity: 0; transform: translate3d(145%, -50%, 0); }
 }
 @keyframes nx-delivery-enter {
-  from { opacity: 0; transform: translate3d(150%, -50%, 0); }
-  70% { opacity: 1; transform: translate3d(-0.25rem, -51%, 0); }
+  from { opacity: 0; transform: translate3d(-150%, -50%, 0); }
+  70% { opacity: 1; transform: translate3d(0.25rem, -51%, 0); }
   to { opacity: 1; transform: translate3d(0, -50%, 0); }
 }
 @keyframes nx-delivery-present {
@@ -774,18 +780,78 @@
   48% { transform: translate3d(-0.25rem, -50%, 0) rotate(-2deg); }
 }
 @keyframes nx-kick-leg {
-  0%, 35% { transform: rotate(0); }
-  65% { transform: rotate(-58deg) translateY(-0.2rem); }
+  0%, 28% { transform: rotate(0); }
+  46% { transform: rotate(18deg) translateY(0.1rem); }
+  68% { transform: rotate(-58deg) translateY(-0.2rem); }
+  84% { transform: rotate(-64deg) translateY(-0.25rem); }
   100% { transform: rotate(0); }
 }
+@keyframes nx-card-carry {
+  0% {
+    opacity: 0;
+    transform: translate3d(calc(var(--nx-carry-x) + var(--nx-entry-shift)), var(--nx-carry-y), -10rem) scale(0.18) rotate(-3deg);
+    filter: blur(2px) saturate(0.88);
+  }
+  58% {
+    opacity: 0.82;
+    transform: translate3d(calc(var(--nx-carry-x) + (var(--nx-entry-shift) * 0.18)), calc(var(--nx-carry-y) + 0.16rem), -10rem) scale(0.18) rotate(-1deg);
+    filter: blur(0.4px) saturate(0.92);
+  }
+  70% {
+    transform: translate3d(calc(var(--nx-carry-x) + 0.25rem), calc(var(--nx-carry-y) - 0.1rem), -10rem) scale(0.18) rotate(-1.5deg);
+  }
+  100% {
+    opacity: 0.88;
+    transform: translate3d(var(--nx-carry-x), var(--nx-carry-y), -10rem) scale(0.18) rotate(-1deg);
+    filter: blur(0) saturate(0.95) drop-shadow(0 0.55rem 0.35rem color-mix(in oklab, var(--nx-navy) 28%, transparent));
+  }
+}
+@keyframes nx-card-to-front {
+  0%, 16% {
+    opacity: 0.88;
+    transform: translate3d(var(--nx-carry-x), var(--nx-carry-y), -10rem) scale(0.18) rotate(-1deg);
+  }
+  52% {
+    transform: translate3d(calc((var(--nx-carry-x) + var(--nx-front-x)) / 2), calc((var(--nx-carry-y) + var(--nx-front-y)) / 2 - 0.45rem), -7rem) scale(0.22) rotate(-2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(var(--nx-front-x), var(--nx-front-y), -4rem) scale(0.28) rotate(0);
+  }
+}
+@keyframes nx-card-contact {
+  0%, 55% {
+    opacity: 1;
+    transform: translate3d(var(--nx-front-x), var(--nx-front-y), -4rem) scale(0.28) rotate(0);
+    filter: blur(0);
+  }
+  66% {
+    transform: translate3d(var(--nx-front-x), calc(var(--nx-front-y) + 0.08rem), -4rem) scale(0.268, 0.286) rotate(-1.2deg);
+  }
+  76% {
+    transform: translate3d(var(--nx-front-x), calc(var(--nx-front-y) - 0.06rem), -1rem) scale(0.34) rotate(0.7deg);
+    filter: blur(0.45px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(var(--nx-front-x), var(--nx-front-y), 0) scale(0.4) rotate(0.3deg);
+    filter: blur(0);
+  }
+}
 @keyframes nx-response-flight {
-  0% { opacity: 0.92; transform: translate3d(clamp(-11rem, -18vw, -4rem), 4vh, 0) scale(0.42) rotate(1deg); }
-  72% { opacity: 1; transform: translate3d(0.35rem, -0.2rem, 0) scale(1.025); }
+  0% { opacity: 1; transform: translate3d(var(--nx-front-x), var(--nx-front-y), 0) scale(0.4) rotate(0.3deg); filter: blur(0); }
+  26% { transform: translate3d(calc(var(--nx-front-x) * 0.82), calc(var(--nx-front-y) * 0.82), 12rem) scale(0.54) rotate(0.2deg); filter: blur(0.65px); }
+  72% { opacity: 1; transform: translate3d(calc(var(--nx-front-x) * 0.18), calc(var(--nx-front-y) * 0.18), 3rem) scale(1.025); filter: blur(0); }
   100% { opacity: 1; transform: none; }
 }
 @keyframes nx-delivery-exit {
   from { opacity: 1; transform: translate3d(0, -50%, 0); }
-  to { opacity: 0; transform: translate3d(150%, -50%, 0); }
+  to { opacity: 0; transform: translate3d(-150%, -50%, 0); }
+}
+
+@keyframes nx-courier-support {
+  from { transform: rotate(-9deg) translate(-1px, -2px); }
+  to { transform: rotate(-14deg) translate(-3px, -5px); }
 }
 
 @media (max-width: 30rem) {
@@ -859,8 +925,8 @@
   height: clamp(9.6rem, 25dvh, 15.5rem);
 }
 
-.nx-chat-thinking-actor { left: clamp(0.4rem, 4vw, 3rem); }
-.nx-chat-delivery-actor { right: clamp(0.45rem, 5vw, 3.5rem); top: 58%; }
+.nx-chat-thinking-actor { right: clamp(0.4rem, 4vw, 3rem); }
+.nx-chat-delivery-actor { left: clamp(0.45rem, 5vw, 3.5rem); top: 58%; }
 
 .nx-chat-person {
   width: 100%;
@@ -922,23 +988,6 @@
   to { transform: rotate(5deg); }
 }
 
-/* The existing response DOM is the carried object—never a duplicate preview. */
-.nx-app [data-delivery-phase="delivery-enter"] [data-delivering="true"] {
-  opacity: 0.62;
-  transform: translate3d(clamp(-30rem, -47vw, -9rem), 10dvh, -22rem) scale(0.18) rotateY(8deg) rotate(-2deg);
-  filter: saturate(0.9);
-}
-.nx-app [data-delivery-phase="card-present"] [data-delivering="true"] {
-  opacity: 0.88;
-  transform: translate3d(clamp(-20rem, -31vw, -6rem), 7dvh, -13rem) scale(0.3) rotateY(5deg) rotate(-1deg);
-  transition: opacity 480ms ease, transform 560ms ease, filter 560ms ease;
-}
-.nx-app [data-delivery-phase="card-kick"] [data-delivering="true"] {
-  opacity: 1;
-  transform: translate3d(clamp(-12rem, -19vw, -3.5rem), 4dvh, -8rem) scale(0.43) rotateY(2deg);
-  transition: opacity 420ms ease, transform 480ms cubic-bezier(0.2, 0.75, 0.25, 1);
-}
-
 @media (max-width: 30rem) {
   .nx-app .nx-response-card { --nx-card-max-height: min(52dvh, 27rem); }
   .nx-app .nx-response-card[data-response-size="compact"] { max-width: 88%; }
@@ -950,8 +999,8 @@
     width: clamp(3.7rem, 16vw, 4.6rem);
     height: clamp(8.2rem, 20dvh, 10.8rem);
   }
-  .nx-chat-thinking-actor { left: 0.35rem; top: 52%; }
-  .nx-chat-delivery-actor { right: 0.35rem; top: 58%; }
+  .nx-chat-thinking-actor { right: 0.35rem; top: 52%; }
+  .nx-chat-delivery-actor { left: 0.35rem; top: 58%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

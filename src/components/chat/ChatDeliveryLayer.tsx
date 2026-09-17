@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 
 export type ChatDeliveryPhase =
   | "idle"
@@ -108,6 +108,41 @@ export function ChatDeliveryLayer({
     const id = window.setTimeout(onAdvance, (durations[phase] ?? 900) + 180);
     return () => window.clearTimeout(id);
   }, [onAdvance, phase]);
+
+  useLayoutEffect(() => {
+    if (phase !== "thinking-exit") return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const card = document.querySelector<HTMLElement>('[data-delivering="true"]');
+      const stage = card?.closest<HTMLElement>("[data-chat-stage]");
+      if (!card || !stage) return;
+
+      const cardRect = card.getBoundingClientRect();
+      const stageRect = stage.getBoundingClientRect();
+      const mobile = window.matchMedia("(max-width: 30rem)").matches;
+      const rootSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const actorWidth = mobile
+        ? Math.min(Math.max(rootSize * 3.7, window.innerWidth * 0.16), rootSize * 4.6)
+        : Math.min(Math.max(rootSize * 4.2, window.innerWidth * 0.09), rootSize * 6.5);
+      const actorHeight = mobile
+        ? Math.min(Math.max(rootSize * 8.2, window.innerHeight * 0.2), rootSize * 10.8)
+        : Math.min(Math.max(rootSize * 9.6, window.innerHeight * 0.25), rootSize * 15.5);
+      const actorLeft = stageRect.left + (mobile ? rootSize * 0.35 : Math.min(Math.max(rootSize * 0.4, window.innerWidth * 0.04), rootSize * 3));
+      const actorTop = stageRect.top + stageRect.height * 0.58 - actorHeight / 2;
+      const carryLeft = actorLeft + actorWidth * 0.28;
+      const carryTop = actorTop + actorHeight * 0.08;
+      const frontLeft = actorLeft + actorWidth * 0.58;
+      const frontTop = actorTop + actorHeight * 0.58;
+
+      card.style.setProperty("--nx-carry-x", `${carryLeft - cardRect.left}px`);
+      card.style.setProperty("--nx-carry-y", `${carryTop - cardRect.top}px`);
+      card.style.setProperty("--nx-front-x", `${frontLeft - cardRect.left}px`);
+      card.style.setProperty("--nx-front-y", `${frontTop - cardRect.top}px`);
+      card.style.setProperty("--nx-entry-shift", `${actorWidth * -1.5}px`);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [phase]);
 
   if (phase === "idle") return null;
   const thinking = phase.startsWith("thinking");
