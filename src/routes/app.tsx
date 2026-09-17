@@ -661,7 +661,7 @@ function ChatPage() {
                           <img
                             key={a.id}
                             src={a.previewUrl}
-                            alt={a.name}
+                            alt={imageAltText(a.name)}
                             className="max-h-40 max-w-full rounded-lg object-contain"
                           />
                         ) : (
@@ -748,7 +748,7 @@ function ChatPage() {
                     {p.previewUrl ? (
                       <img
                         src={p.previewUrl}
-                        alt={p.name}
+                        alt={imageAltText(p.name)}
                         className="size-7 rounded-full object-cover"
                       />
                     ) : p.kind === "pdf" ? (
