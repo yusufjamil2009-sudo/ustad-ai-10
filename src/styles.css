@@ -372,17 +372,36 @@
 .landing-poster-wrap {
   position: relative;
   z-index: 2;
-  width: min(100%, 30rem);
+  width: min(calc(100% - 2rem), 19rem);
   margin: 0;
+  padding: 0.3rem;
   overflow: hidden;
-  box-shadow: 0 1.35rem 3.5rem -2rem oklch(0.38 0.14 240 / 0.42);
+  border: 1px solid color-mix(in oklab, var(--landing-gold) 72%, var(--landing-cyan));
+  border-radius: 0.8rem;
+  background: linear-gradient(145deg, oklch(0.2 0.08 248), oklch(0.09 0.04 255));
+  box-shadow:
+    0 0 0 1px oklch(0.89 0.1 213 / 0.3),
+    0 1.5rem 3.5rem -1.5rem oklch(0.32 0.17 245 / 0.64),
+    0 0 2rem oklch(0.69 0.18 225 / 0.18);
   animation: landing-poster-in 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.landing-poster-wrap::after {
+  position: absolute;
+  z-index: 4;
+  inset: 0.65rem;
+  border: 1px solid oklch(0.9 0.11 213 / 0.46);
+  border-radius: 0.45rem;
+  box-shadow: inset 0 0 1.4rem oklch(0.72 0.17 224 / 0.2);
+  content: "";
+  pointer-events: none;
 }
 
 .landing-poster {
   display: block;
   width: 100%;
   height: auto;
+  border-radius: 0.5rem;
   object-fit: contain;
 }
 
@@ -785,6 +804,7 @@
   .landing-feature-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .landing-feature-card { grid-template-columns: 1fr; }
   .landing-hero { min-height: auto; }
+  .landing-poster-wrap { width: min(88vw, 30rem); padding: 0.42rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

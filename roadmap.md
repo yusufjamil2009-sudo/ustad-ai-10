@@ -5,3 +5,4 @@
 - [x] Apply the mode across every existing USTAD AI page and preserve all controls.
 - [ ] Validate routes, mobile widths, interactions, console errors, and critical flows.
 - [x] Verify the suitcase-to-Guest-ID handoff stays smooth on mobile.
+- [x] Replace the landing hero image with Yusuf Ali's supplied artwork in a lightweight luxury frame.
