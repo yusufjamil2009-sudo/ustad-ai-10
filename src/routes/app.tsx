@@ -603,12 +603,13 @@ function ChatPage() {
           )}
 
           <div className="hide-scrollbar flex-1 space-y-4 overflow-y-auto px-3 py-6 md:px-8">
+            <h1 className="sr-only">USTAD AI Chat</h1>
             {messages.length === 0 ? (
               <div className="mx-auto max-w-xl py-14 text-center">
                 <UstadLogo className="mx-auto mb-4 size-16 sm:size-20 md:size-24" priority />
-                <h1 className="font-display text-lg font-bold tracking-[0.18em] uppercase gold-text sm:text-xl">
+                <h2 className="font-display text-lg font-bold tracking-[0.18em] uppercase gold-text sm:text-xl">
                   Welcome to USTAD AI
-                </h1>
+                </h2>
                 <p
                   className="mt-2 text-xl font-semibold break-words text-foreground sm:text-2xl"
                   aria-live="polite"

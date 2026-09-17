@@ -323,7 +323,11 @@ function PublicTile({
         <div className="relative aspect-square w-full overflow-hidden">
           <img
             src={image.url}
-            alt={image.originalName || "Shared gallery image"}
+            alt={
+              image.originalName
+                ? `${image.originalName.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " ")} — shared gallery photo`
+                : "Shared gallery image"
+            }
             loading="lazy"
             decoding="async"
             className="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-[1.03]"
