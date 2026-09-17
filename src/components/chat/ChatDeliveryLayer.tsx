@@ -11,7 +11,7 @@ export type ChatDeliveryPhase =
   | "card-flight"
   | "delivery-exit";
 
-function Person({ carrying = false }: { carrying?: boolean }) {
+function Person() {
   return (
     <div className="nx-chat-person" aria-hidden="true">
       <span className="nx-chat-person-head" />
@@ -21,7 +21,6 @@ function Person({ carrying = false }: { carrying?: boolean }) {
       <span className="nx-chat-person-arm arm-front" />
       <span className="nx-chat-person-leg leg-back" />
       <span className="nx-chat-person-leg leg-front" />
-      {carrying ? <span className="nx-chat-carried-card" /> : null}
     </div>
   );
 }
@@ -59,7 +58,7 @@ export function ChatDeliveryLayer({
           if (event.target === event.currentTarget) onAdvance();
         }}
       >
-        <Person carrying={!thinking && phase === "delivery-enter"} />
+        <Person />
         {!thinking ? <span className="nx-chat-contact-shadow" /> : null}
       </div>
     </div>

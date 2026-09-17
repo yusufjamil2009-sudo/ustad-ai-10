@@ -532,7 +532,11 @@ function ChatPage() {
         </div>
 
         {/* chat area */}
-        <div className="relative flex min-h-0 min-w-0 flex-1 flex-col" data-chat-stage>
+        <div
+          className="relative flex min-h-0 min-w-0 flex-1 flex-col"
+          data-chat-stage
+          data-delivery-phase={nextMode ? deliveryPhase : undefined}
+        >
           <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2 md:px-4">
             <div className="flex shrink-0 items-center gap-1">
               <Button
