@@ -48,6 +48,22 @@ import {
 } from "@/lib/ustad-client";
 import { toast } from "sonner";
 
+export const IDENTITY_VERIFY_EVENT = "ustad:identity-verification";
+export const IDENTITY_VERIFY_KEY = "ustad.identity.verification";
+
+function publishVerification(state: "verifying" | "verified" | "failed", username = "") {
+  try {
+    if (state === "failed") {
+      window.sessionStorage.removeItem(IDENTITY_VERIFY_KEY);
+    } else {
+      window.sessionStorage.setItem(IDENTITY_VERIFY_KEY, state);
+    }
+    window.dispatchEvent(new CustomEvent(IDENTITY_VERIFY_EVENT, { detail: { state, username } }));
+  } catch {
+    /* Visual sequencing is best effort; authentication remains authoritative. */
+  }
+}
+
 type Mode = "choose" | "new" | "backup";
 
 /** Shared credential form for creating a Guest ID, restoring one, or claiming the current guest. */
@@ -168,8 +184,10 @@ export function IdentityScreen() {
     username?: string,
   ) {
     setError(null);
+    publishVerification("verifying", username);
     const res = await action();
     if (!res.ok) {
+      publishVerification("failed");
       setError(errorText((res.code ?? "validation") as IdentityErrorCode, language));
       return;
     }
@@ -181,6 +199,7 @@ export function IdentityScreen() {
     } catch {
       /* the cinematic is optional; the app continues exactly as before */
     }
+    publishVerification("verified", username);
   }
 
   return (

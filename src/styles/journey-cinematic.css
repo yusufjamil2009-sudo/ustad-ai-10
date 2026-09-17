@@ -14,11 +14,24 @@
     linear-gradient(180deg, #05070f 0%, #0a1020 45%, #060911 100%);
   color: #eaf1ff;
   /* responsive "medium" scale for the vehicles: never huge, never tiny */
-  --jc-scale: 0.72;
+  --jc-scale: clamp(0.62, 18vw, 0.78);
   --jc-ground: 30%;
   contain: strict;
   isolation: isolate;
   touch-action: none;
+}
+
+@media (max-width: 375px) {
+  .jc-verify-title {
+    font-size: 1.25rem;
+    letter-spacing: 0.15em;
+  }
+
+  .jc-verify-sub {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    padding-inline: 1rem;
+  }
 }
 
 .jc-stage * {
