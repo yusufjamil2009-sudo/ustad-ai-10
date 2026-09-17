@@ -282,7 +282,7 @@ function ChatPage() {
     const text = input.trim();
     if (!text && pending.length === 0) return;
     setBusy(true);
-    setStatus("Thinking…");
+    setStatus(nextMode ? "USTAD AI is working" : "Thinking…");
     if (nextMode) {
       setDeliveringMessageId(null);
       setDeliveryPhase("thinking-enter");
