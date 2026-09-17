@@ -21,7 +21,11 @@ export const Route = createFileRoute("/notifications/$id")({
   head: () => ({
     meta: [
       { title: "Notification | USTAD AI" },
-      { name: "description", content: "Full details for this notification." },
+      {
+        name: "description",
+        content:
+          "Read the full details of this USTAD AI notification, including its message, exact time, related event or reward information, and the action you can take next.",
+      },
       { property: "og:title", content: "Notification — USTAD AI" },
       { property: "og:type", content: "website" },
     ],

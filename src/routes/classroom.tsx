@@ -373,7 +373,11 @@ function ClassroomPage() {
 
             {/* Transport */}
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Button variant="secondary" onClick={() => withOrch((o) => o.goBack())}>
+              <Button
+                variant="secondary"
+                aria-label="Go back one step"
+                onClick={() => withOrch((o) => o.goBack())}
+              >
                 <SkipBack className="size-4" />
               </Button>
               <Button
@@ -388,7 +392,11 @@ function ClassroomPage() {
                 {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
                 {playing ? "Pause" : "Play"}
               </Button>
-              <Button variant="secondary" onClick={() => withOrch((o) => o.advance())}>
+              <Button
+                variant="secondary"
+                aria-label="Go forward one step"
+                onClick={() => withOrch((o) => o.advance())}
+              >
                 <SkipForward className="size-4" />
               </Button>
               <Button variant="secondary" onClick={startLesson}>
@@ -396,6 +404,7 @@ function ClassroomPage() {
               </Button>
               <Button
                 variant="secondary"
+                aria-label={state?.muted ? "Unmute lesson audio" : "Mute lesson audio"}
                 onClick={() => withEngine((e) => e.setMuted(!(state?.muted ?? false)))}
               >
                 {state?.muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
@@ -403,6 +412,7 @@ function ClassroomPage() {
               <Button
                 variant="secondary"
                 onClick={() => withEngine((e) => e.skipStep())}
+                aria-label="Skip this beat"
                 title="Skip this beat"
               >
                 <FastForward className="size-4" />
@@ -412,7 +422,9 @@ function ClassroomPage() {
                 onClick={() =>
                   withEngine((e) => (state?.listening ? e.stopListening() : e.startListening()))
                 }
+                aria-label="Ask a doubt by voice"
                 title="Ask a doubt by voice"
+
               >
                 {state?.listening ? <MicOff className="size-4" /> : <Mic className="size-4" />}
               </Button>

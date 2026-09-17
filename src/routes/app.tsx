@@ -105,6 +105,20 @@ function responseCardSize(content: string): ResponseCardSize {
   return "scroll";
 }
 
+/**
+ * Readable alt text for an attached image: drop the file extension and turn
+ * separators into spaces so screen readers announce "maths homework page 2"
+ * instead of "maths_homework_page_2.png".
+ */
+function imageAltText(fileName: string): string {
+  const base = (fileName ?? "")
+    .replace(/\.[a-z0-9]{1,5}$/i, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return base ? `Attached image: ${base}` : "Attached image";
+}
+
 const MAX_BYTES = 8 * 1024 * 1024;
 /** Bug #20: above this, PUT raw bytes to a signed slot — never a huge data URL. */
 const DIRECT_THRESHOLD = 256 * 1024;
@@ -487,6 +501,7 @@ function ChatPage() {
             <Button
               variant="ghost"
               size="icon"
+              aria-label="Close chat list"
               className="lg:hidden"
               onClick={() => setShowList(false)}
             >
@@ -646,7 +661,7 @@ function ChatPage() {
                           <img
                             key={a.id}
                             src={a.previewUrl}
-                            alt={a.name}
+                            alt={imageAltText(a.name)}
                             className="max-h-40 max-w-full rounded-lg object-contain"
                           />
                         ) : (
@@ -733,7 +748,7 @@ function ChatPage() {
                     {p.previewUrl ? (
                       <img
                         src={p.previewUrl}
-                        alt={p.name}
+                        alt={imageAltText(p.name)}
                         className="size-7 rounded-full object-cover"
                       />
                     ) : p.kind === "pdf" ? (

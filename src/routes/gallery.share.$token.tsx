@@ -39,7 +39,11 @@ export const Route = createFileRoute("/gallery/share/$token")({
   head: () => ({
     meta: [
       { title: "USTAD Gallery — Shared Images" },
-      { name: "description", content: "A shared USTAD Gallery." },
+      {
+        name: "description",
+        content:
+          "View, preview and download the images in this shared USTAD Gallery collection, shared from the USTAD AI learning platform.",
+      },
       { property: "og:title", content: "USTAD Gallery — Shared Images" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
