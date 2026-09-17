@@ -28,6 +28,7 @@ import { useGreeting } from "@/hooks/useGreeting";
 import { useOnline } from "@/hooks/usePwa";
 import { UstadLogo } from "@/components/UstadLogo";
 import { setClassroomHandoff } from "@/lib/classroom-handoff";
+import { useNextMode } from "@/lib/next-mode";
 import { answerToLessonContent } from "@/lib/answer-to-lesson";
 import { localTimeZone } from "@/lib/chrono-engine";
 import { speakMessage, stopSpeaking } from "@/lib/tts";
@@ -45,6 +46,10 @@ import {
   transcribeFn,
 } from "@/lib/ustad-api";
 import { hasDeviceAi, runDeviceText } from "@/lib/browser-ai";
+import {
+  ChatDeliveryLayer,
+  type ChatDeliveryPhase,
+} from "@/components/chat/ChatDeliveryLayer";
 
 
 export const Route = createFileRoute("/app")({
@@ -161,6 +166,7 @@ function ChatPage() {
   const greeting = useGreeting();
   const online = useOnline();
   const navigate = useNavigate();
+  const { enabled: nextMode } = useNextMode();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -173,10 +179,29 @@ function ChatPage() {
   const [showList, setShowList] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [revealSources, setRevealSources] = useState<Record<string, boolean>>({});
+  const [deliveryPhase, setDeliveryPhase] = useState<ChatDeliveryPhase>("idle");
+  const [deliveringMessageId, setDeliveringMessageId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
+
+  const advanceDelivery = useCallback(() => {
+    setDeliveryPhase((phase) => {
+      switch (phase) {
+        case "thinking-enter": return "thinking-active";
+        case "thinking-exit": return "delivery-enter";
+        case "delivery-enter": return "card-present";
+        case "card-present": return "card-kick";
+        case "card-kick": return "card-flight";
+        case "card-flight": return "delivery-exit";
+        case "delivery-exit":
+          setDeliveringMessageId(null);
+          return "idle";
+        default: return phase;
+      }
+    });
+  }, []);
 
   const refreshConversations = useCallback(async () => {
     if (!token) return;
@@ -258,6 +283,10 @@ function ChatPage() {
     if (!text && pending.length === 0) return;
     setBusy(true);
     setStatus("Thinking…");
+    if (nextMode) {
+      setDeliveringMessageId(null);
+      setDeliveryPhase("thinking-enter");
+    }
     setInput("");
     const attachmentIds = pending.map((p) => p.id);
     pending.forEach((p) => p.previewUrl && URL.revokeObjectURL(p.previewUrl));
@@ -311,7 +340,12 @@ function ChatPage() {
       const rows = (await listMessagesFn({
         data: { token, conversationId: res.conversationId },
       })) as unknown as Message[];
+      const completedAssistant = [...rows].reverse().find((message) => message.role === "assistant");
       setMessages(rows);
+      if (nextMode && completedAssistant) {
+        setDeliveringMessageId(completedAssistant.id);
+        setDeliveryPhase("thinking-exit");
+      }
       setStatus(
         `${res.status.provider} · ${res.status.model} · ${res.status.intent}` +
           (res.status.continuations ? ` · continued ×${res.status.continuations}` : ""),
@@ -333,6 +367,10 @@ function ChatPage() {
     } catch (e) {
       toast.error((e as Error).message);
       setStatus("");
+      if (nextMode) {
+        setDeliveringMessageId(null);
+        setDeliveryPhase("idle");
+      }
     } finally {
       setBusy(false);
     }
@@ -378,6 +416,8 @@ function ChatPage() {
     setInput("");
     setPending([]);
     setStatus("");
+    setDeliveryPhase("idle");
+    setDeliveringMessageId(null);
     setShowList(false);
     void refreshConversations();
   };
@@ -492,7 +532,7 @@ function ChatPage() {
         </div>
 
         {/* chat area */}
-        <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
+        <div className="relative flex min-h-0 min-w-0 flex-1 flex-col" data-chat-stage>
           <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2 md:px-4">
             <div className="flex shrink-0 items-center gap-1">
               <Button
@@ -574,9 +614,11 @@ function ChatPage() {
                 className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
+                  data-chat-message={m.role}
+                  data-delivering={m.id === deliveringMessageId ? "true" : undefined}
                   className={`max-w-[min(46rem,92%)] rounded-2xl px-4 py-3 ${
                     m.role === "user" ? "bg-primary text-primary-foreground" : "panel"
-                  }`}
+                  } ${nextMode ? "nx-chat-message" : ""}`}
                 >
                   {m.attachments?.length ? (
                     <div className="mb-2 flex flex-wrap gap-2">
@@ -642,7 +684,7 @@ function ChatPage() {
               </div>
             ))}
 
-            {busy ? (
+            {busy && !nextMode ? (
               <div className="flex gap-1 px-2">
                 {[0, 1, 2].map((i) => (
                   <span
@@ -655,6 +697,10 @@ function ChatPage() {
             ) : null}
             <div ref={bottomRef} />
           </div>
+
+          {nextMode ? (
+            <ChatDeliveryLayer phase={deliveryPhase} onAdvance={advanceDelivery} />
+          ) : null}
 
           {/* composer */}
           <div className="border-t border-border px-3 py-3 md:px-8">
