@@ -95,6 +95,15 @@ type Message = {
   } | null;
 };
 type Pending = { id: string; name: string; kind: string; previewUrl?: string };
+type ResponseCardSize = "compact" | "standard" | "expanded" | "scroll";
+
+function responseCardSize(content: string): ResponseCardSize {
+  const length = content.trim().length;
+  if (length <= 220) return "compact";
+  if (length <= 850) return "standard";
+  if (length <= 1800) return "expanded";
+  return "scroll";
+}
 
 const MAX_BYTES = 8 * 1024 * 1024;
 /** Bug #20: above this, PUT raw bytes to a signed slot — never a huge data URL. */
@@ -625,9 +634,10 @@ function ChatPage() {
                 <div
                   data-chat-message={m.role}
                   data-delivering={m.id === deliveringMessageId ? "true" : undefined}
+                  data-response-size={m.role === "assistant" ? responseCardSize(m.content) : undefined}
                   className={`max-w-[min(46rem,92%)] rounded-2xl px-4 py-3 ${
                     m.role === "user" ? "bg-primary text-primary-foreground" : "panel"
-                  } ${nextMode ? "nx-chat-message" : ""}`}
+                  } ${nextMode ? `nx-chat-message ${m.role === "assistant" ? "nx-response-card" : ""}` : ""}`}
                 >
                   {m.attachments?.length ? (
                     <div className="mb-2 flex flex-wrap gap-2">

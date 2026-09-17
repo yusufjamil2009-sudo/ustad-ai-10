@@ -812,6 +812,152 @@
   }
 }
 
+/* Premium response object: its real content determines its final footprint. */
+.nx-app .nx-response-card {
+  --nx-card-max-height: min(58dvh, 36rem);
+  width: fit-content;
+  min-width: min(14rem, 86vw);
+  max-width: min(46rem, 92%);
+  border-color: color-mix(in oklab, var(--nx-cyan) 34%, white);
+  background:
+    linear-gradient(112deg, oklch(1 0 0 / 0.9), oklch(0.965 0.018 225 / 0.76) 58%, oklch(0.98 0.014 85 / 0.7));
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.98),
+    inset 1px 0 0 color-mix(in oklab, var(--nx-cyan) 18%, transparent),
+    0 1.5rem 3rem -2rem color-mix(in oklab, var(--nx-navy) 35%, transparent),
+    0 0 1.5rem -1.1rem color-mix(in oklab, var(--nx-cyan) 42%, transparent);
+}
+
+.nx-app .nx-response-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(118deg, oklch(1 0 0 / 0.5), transparent 24%, transparent 75%, color-mix(in oklab, var(--nx-cyan) 10%, transparent));
+  pointer-events: none;
+}
+
+.nx-app .nx-response-card[data-response-size="compact"] { max-width: min(29rem, 90%); }
+.nx-app .nx-response-card[data-response-size="standard"] { max-width: min(38rem, 92%); }
+.nx-app .nx-response-card[data-response-size="expanded"] { width: min(43rem, 92%); }
+.nx-app .nx-response-card[data-response-size="scroll"] {
+  width: min(46rem, 92%);
+  max-height: var(--nx-card-max-height);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+/* Original in-product characters: tailored silhouettes, visor and luminous suit seams. */
+.nx-chat-cinema {
+  perspective: 70rem;
+}
+
+.nx-chat-thinking-actor,
+.nx-chat-delivery-actor {
+  width: clamp(4.2rem, 9vw, 6.5rem);
+  height: clamp(9.6rem, 25dvh, 15.5rem);
+}
+
+.nx-chat-thinking-actor { right: clamp(0.4rem, 4vw, 3rem); }
+.nx-chat-delivery-actor { left: clamp(0.45rem, 5vw, 3.5rem); top: 58%; }
+
+.nx-chat-person {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0.75rem 0.7rem color-mix(in oklab, var(--nx-navy) 28%, transparent));
+  --nx-figure-suit-hi: color-mix(in oklab, var(--nx-blue) 42%, white);
+  --nx-figure-suit: color-mix(in oklab, var(--nx-navy) 82%, var(--nx-blue));
+  --nx-figure-suit-low: color-mix(in oklab, var(--nx-navy) 94%, black);
+  --nx-figure-skin-hi: oklch(0.82 0.075 65);
+  --nx-figure-skin: oklch(0.67 0.09 55);
+  --nx-figure-hair: color-mix(in oklab, var(--nx-navy) 90%, black);
+  --nx-figure-boot: color-mix(in oklab, var(--nx-navy) 95%, black);
+  --nx-figure-cyan: var(--nx-cyan);
+  --nx-figure-blue: var(--nx-blue);
+}
+
+.nx-chat-delivery-actor .nx-chat-person {
+  --nx-figure-suit-hi: color-mix(in oklab, var(--nx-cyan) 30%, white);
+  --nx-figure-suit: color-mix(in oklab, var(--nx-navy) 76%, var(--nx-cyan));
+}
+
+.nx-figure-ground { fill: color-mix(in oklab, var(--nx-navy) 20%, transparent); filter: blur(2px); }
+.nx-figure-seam { fill: none; stroke: color-mix(in oklab, white 24%, transparent); stroke-width: 2; }
+.nx-figure-panel { fill: none; stroke: color-mix(in oklab, var(--nx-cyan) 42%, transparent); stroke-width: 2; }
+.nx-figure-cyan-line { fill: none; stroke: var(--nx-figure-cyan); stroke-width: 2.5; stroke-linecap: round; filter: drop-shadow(0 0 3px var(--nx-figure-cyan)); }
+.nx-figure-core { fill: var(--nx-figure-cyan); }
+.nx-figure-waist { fill: color-mix(in oklab, var(--nx-navy) 86%, black); stroke: color-mix(in oklab, var(--nx-cyan) 28%, transparent); stroke-width: 1; }
+.nx-figure-visor-line { fill: none; stroke: white; stroke-width: 1.5; opacity: 0.75; }
+.nx-figure-comms { fill: none; stroke: var(--nx-figure-cyan); stroke-width: 2; }
+.nx-figure-armor-edge { fill: none; stroke: color-mix(in oklab, white 50%, transparent); stroke-width: 3; stroke-linecap: round; }
+
+.nx-chat-cinema[data-phase="thinking-active"] .nx-figure-head {
+  animation: nx-figure-consider 2.4s ease-in-out infinite;
+  transform-origin: 82px 94px;
+}
+.nx-chat-cinema[data-phase="thinking-active"] .nx-figure-front-arm {
+  animation: nx-figure-chin 2.4s ease-in-out infinite;
+  transform-origin: 116px 116px;
+}
+.nx-chat-cinema[data-phase="delivery-enter"] .nx-figure-front-leg,
+.nx-chat-cinema[data-phase="delivery-enter"] .nx-figure-back-leg,
+.nx-chat-cinema[data-phase="delivery-exit"] .nx-figure-front-leg,
+.nx-chat-cinema[data-phase="delivery-exit"] .nx-figure-back-leg {
+  animation: nx-figure-step 420ms ease-in-out infinite alternate;
+  transform-origin: 80px 220px;
+}
+
+@keyframes nx-figure-consider {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  48% { transform: rotate(-4deg) translateY(1px); }
+}
+@keyframes nx-figure-chin {
+  0%, 100% { transform: rotate(0deg); }
+  45%, 62% { transform: rotate(-23deg) translate(-7px, -9px); }
+}
+@keyframes nx-figure-step {
+  from { transform: rotate(-5deg); }
+  to { transform: rotate(5deg); }
+}
+
+/* The existing response DOM is the carried object—never a duplicate preview. */
+.nx-app [data-delivery-phase="delivery-enter"] [data-delivering="true"] {
+  opacity: 0.62;
+  transform: translate3d(clamp(-30rem, -47vw, -9rem), 10dvh, -22rem) scale(0.18) rotateY(8deg) rotate(-2deg);
+  filter: saturate(0.9);
+}
+.nx-app [data-delivery-phase="card-present"] [data-delivering="true"] {
+  opacity: 0.88;
+  transform: translate3d(clamp(-20rem, -31vw, -6rem), 7dvh, -13rem) scale(0.3) rotateY(5deg) rotate(-1deg);
+  transition: opacity 480ms ease, transform 560ms ease, filter 560ms ease;
+}
+.nx-app [data-delivery-phase="card-kick"] [data-delivering="true"] {
+  opacity: 1;
+  transform: translate3d(clamp(-12rem, -19vw, -3.5rem), 4dvh, -8rem) scale(0.43) rotateY(2deg);
+  transition: opacity 420ms ease, transform 480ms cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+@media (max-width: 30rem) {
+  .nx-app .nx-response-card { --nx-card-max-height: min(52dvh, 27rem); }
+  .nx-app .nx-response-card[data-response-size="compact"] { max-width: 88%; }
+  .nx-app .nx-response-card[data-response-size="standard"],
+  .nx-app .nx-response-card[data-response-size="expanded"],
+  .nx-app .nx-response-card[data-response-size="scroll"] { width: 94%; max-width: 94%; }
+  .nx-chat-thinking-actor,
+  .nx-chat-delivery-actor {
+    width: clamp(3.7rem, 16vw, 4.6rem);
+    height: clamp(8.2rem, 20dvh, 10.8rem);
+  }
+  .nx-chat-thinking-actor { right: 0.35rem; top: 52%; }
+  .nx-chat-delivery-actor { left: 0.35rem; top: 58%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-app .nx-response-card { max-height: none; }
+}
+
 /* ---------- Settings → Preferences entry (lives on the existing page) ---------- */
 .nx-pref-entry {
   position: relative;
