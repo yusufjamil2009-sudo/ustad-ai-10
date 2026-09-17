@@ -8,5 +8,5 @@
 - [x] Replace the landing hero image with Yusuf Ali's supplied artwork in a lightweight luxury frame.
 - [x] Add the real-response-synchronised delivery animation to NEW USTAD AI chat only.
 - [x] Validate response actions, reduced motion, and 360–430px chat layouts.
-- [ ] Replace placeholder chat figures with cohesive original futuristic characters.
-- [ ] Validate the real content-sized glass response card and full mobile sequence.
+- [x] Replace placeholder chat figures with cohesive original futuristic characters.
+- [x] Validate the real content-sized glass response card and full mobile sequence.
