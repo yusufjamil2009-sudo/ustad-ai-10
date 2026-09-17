@@ -138,6 +138,7 @@ export function ChatDeliveryLayer({
       card.style.setProperty("--nx-carry-y", `${carryTop - cardRect.top}px`);
       card.style.setProperty("--nx-front-x", `${frontLeft - cardRect.left}px`);
       card.style.setProperty("--nx-front-y", `${frontTop - cardRect.top}px`);
+      card.style.setProperty("--nx-entry-shift", `${actorWidth * -1.5}px`);
     });
 
     return () => window.cancelAnimationFrame(frame);

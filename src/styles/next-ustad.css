@@ -725,6 +725,7 @@
   --nx-carry-y: 0px;
   --nx-front-x: 0px;
   --nx-front-y: 0px;
+  --nx-entry-shift: -7rem;
   transform-origin: 0 0;
   will-change: transform, opacity, filter;
   z-index: 14;
@@ -788,16 +789,16 @@
 @keyframes nx-card-carry {
   0% {
     opacity: 0;
-    transform: translate3d(calc(var(--nx-carry-x) - 42vw), var(--nx-carry-y), -10rem) scale(0.18) rotate(-3deg);
+    transform: translate3d(calc(var(--nx-carry-x) + var(--nx-entry-shift)), var(--nx-carry-y), -10rem) scale(0.18) rotate(-3deg);
     filter: blur(2px) saturate(0.88);
   }
   58% {
     opacity: 0.82;
-    transform: translate3d(calc(var(--nx-carry-x) + 0.18rem), calc(var(--nx-carry-y) + 0.16rem), -10rem) scale(0.18) rotate(-1deg);
+    transform: translate3d(calc(var(--nx-carry-x) + (var(--nx-entry-shift) * 0.18)), calc(var(--nx-carry-y) + 0.16rem), -10rem) scale(0.18) rotate(-1deg);
     filter: blur(0.4px) saturate(0.92);
   }
-  78% {
-    transform: translate3d(calc(var(--nx-carry-x) - 0.1rem), calc(var(--nx-carry-y) - 0.1rem), -10rem) scale(0.18) rotate(-1.5deg);
+  70% {
+    transform: translate3d(calc(var(--nx-carry-x) + 0.25rem), calc(var(--nx-carry-y) - 0.1rem), -10rem) scale(0.18) rotate(-1.5deg);
   }
   100% {
     opacity: 0.88;
