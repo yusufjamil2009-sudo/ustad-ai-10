@@ -19,7 +19,12 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { useGuest, shortId } from "@/lib/ustad-client";
-import { IdentityScreen, SecureDeviceNotice } from "@/components/IdentityScreen";
+import {
+  IdentityScreen,
+  SecureDeviceNotice,
+  IDENTITY_VERIFY_EVENT,
+  IDENTITY_VERIFY_KEY,
+} from "@/components/IdentityScreen";
 import { GlassIdentityStage } from "@/components/entry/GlassIdentityStage";
 import { ENTRY_REVEAL_KEY } from "@/components/entry/CinematicEntry";
 import {
@@ -59,19 +64,46 @@ export function AppShell({ children }: { children: ReactNode }) {
    * flow has just verified successfully (flag written by IdentityScreen) and a
    * real session exists. It never gates the app: children render underneath.
    */
+  const [verification, setVerification] = useState<"verifying" | "verified" | null>(() => {
+    try {
+      const stored = window.sessionStorage.getItem(IDENTITY_VERIFY_KEY);
+      return stored === "verifying" || stored === "verified" ? stored : null;
+    } catch {
+      return null;
+    }
+  });
   const [journeyName, setJourneyName] = useState<string | null>(null);
   useEffect(() => {
-    if (!session) return;
+    const onVerification = (event: Event) => {
+      const detail = (event as CustomEvent<{ state?: string; username?: string }>).detail;
+      if (detail?.state === "verifying") {
+        setVerification("verifying");
+        return;
+      }
+      if (detail?.state === "failed") {
+        setVerification(null);
+        return;
+      }
+      if (detail?.state === "verified") {
+        setJourneyName((detail.username ?? "").slice(0, 24));
+        setVerification("verified");
+      }
+    };
+    window.addEventListener(IDENTITY_VERIFY_EVENT, onVerification);
+    return () => window.removeEventListener(IDENTITY_VERIFY_EVENT, onVerification);
+  }, []);
+
+  useEffect(() => {
+    if (!session || verification !== "verifying") return;
     try {
       if (window.sessionStorage.getItem(JOURNEY_FLAG_KEY) !== "1") return;
-      window.sessionStorage.removeItem(JOURNEY_FLAG_KEY);
       const name = window.sessionStorage.getItem(JOURNEY_NAME_KEY) ?? "";
-      window.sessionStorage.removeItem(JOURNEY_NAME_KEY);
       setJourneyName(name);
+      setVerification("verified");
     } catch {
-      /* no cinematic — the app behaves exactly as before */
+      /* The explicit verification event remains the primary path. */
     }
-  }, [session]);
+  }, [session, verification]);
   // True while the one-shot cinematic hand-over is still in progress.
   const [entryPending, setEntryPending] = useState(false);
   useEffect(() => {
@@ -140,15 +172,42 @@ export function AppShell({ children }: { children: ReactNode }) {
     );
   }
 
+  // A verified session is necessary but not sufficient for Chat. During a
+  // just-submitted identity flow, keep the entire app unmounted until the
+  // verification presentation reports completion through this single callback.
+  if (verification !== null) {
+    if (verification === "verifying" || journeyName === null) {
+      return (
+        <div className="identity-verifying" role="status" aria-live="polite">
+          <span className="identity-verifying-ring" aria-hidden="true" />
+          <strong>Verifying…</strong>
+        </div>
+      );
+    }
+    return (
+      <JourneyCinematic
+        username={journeyName}
+        onFinish={() => {
+          try {
+            window.sessionStorage.removeItem(IDENTITY_VERIFY_KEY);
+            window.sessionStorage.removeItem(JOURNEY_FLAG_KEY);
+            window.sessionStorage.removeItem(JOURNEY_NAME_KEY);
+          } catch {
+            /* visual flags are best effort */
+          }
+          setVerification(null);
+          setJourneyName(null);
+        }}
+      />
+    );
+  }
+
   return (
     <div
       className={`flex min-h-[100dvh] w-full flex-col md:flex-row ${nextMode ? "nx-root nx-app" : ""}`}
       data-nx-page={nextMode ? pageKind : undefined}
     >
       {nextMode ? <div className="nx-grid" aria-hidden="true" /> : null}
-      {journeyName !== null ? (
-        <JourneyCinematic username={journeyName} onFinish={() => setJourneyName(null)} />
-      ) : null}
       {/* No backdrop-blur on mobile: it would create a containing block and
           pin the fixed bottom nav bar to the top of the screen. */}
       <aside className="nx-shell-nav sticky top-0 z-30 flex shrink-0 flex-row items-center gap-1 border-b border-sidebar-border bg-sidebar/95 px-2 pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] md:h-screen md:w-60 md:flex-col md:items-stretch md:gap-2 md:overflow-y-auto md:border-r md:border-b-0 md:px-4 md:py-5 md:backdrop-blur">

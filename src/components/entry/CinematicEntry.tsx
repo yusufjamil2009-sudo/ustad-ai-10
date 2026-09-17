@@ -24,13 +24,14 @@ export function markCinematicReveal(): void {
 const TIMELINE: Array<{ phase: EntryPhase; at: number }> = [
   { phase: "travel", at: 1700 },
   { phase: "reveal", at: 7200 },
-  { phase: "case", at: 9400 },
-  { phase: "open", at: 10600 },
-  { phase: "card", at: 11500 },
+  { phase: "case", at: 9200 },
+  { phase: "open", at: 10350 },
+  // The card starts rising while the lid is still opening.
+  { phase: "card", at: 10750 },
 ];
 
-/** The card must finish rising (and hold a beat) before we hand over. */
-const HANDOVER_AT = 15400;
+/** Safety only. The normal handover is driven by the card animation ending. */
+const SAFETY_HANDOVER_AT = 14_500;
 
 const CAPTIONS: Record<EntryPhase, string> = {
   draw: "Take aim",
@@ -59,7 +60,7 @@ export function CinematicEntry({ onDone }: { onDone: () => void }) {
       if (finished.current) return;
       finished.current = true;
       setClosing(true);
-      window.setTimeout(onDone, 620);
+      window.setTimeout(onDone, 80);
     };
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -70,7 +71,7 @@ export function CinematicEntry({ onDone }: { onDone: () => void }) {
 
     const timers = TIMELINE.map(({ phase: p, at }) => window.setTimeout(() => setPhase(p), at));
     // Safety: whatever happens on screen, the user always reaches Guest ID.
-    timers.push(window.setTimeout(finish, HANDOVER_AT));
+    timers.push(window.setTimeout(finish, SAFETY_HANDOVER_AT));
 
     const skipOnKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" || e.key === "Enter") finish();
@@ -154,7 +155,12 @@ export function CinematicEntry({ onDone }: { onDone: () => void }) {
         ) : null}
 
         {phase === "card" ? (
-          <div className="ce-rise-card">
+          <div
+            className="ce-rise-card"
+            onAnimationEnd={(event) => {
+              if (event.animationName === "ce-rise-card") finish();
+            }}
+          >
             <span className="ce-rise-beam" />
             <span className="ce-rise-glass">
               <span className="ce-rise-line a" />
