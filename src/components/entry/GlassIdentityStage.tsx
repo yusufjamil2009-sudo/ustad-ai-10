@@ -6,7 +6,7 @@
  * entry flag it returns the children exactly as before — zero behaviour change.
  */
 import { useState, type ReactNode } from "react";
-import { ENTRY_REVEAL_KEY } from "@/components/entry/CinematicEntry";
+import { ENTRY_REVEAL_KEY } from "@/components/entry/entry-flags";
 
 export function GlassIdentityStage({ children }: { children: ReactNode }) {
   // Resolve before the first client paint, avoiding a blank checking frame.

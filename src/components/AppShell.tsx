@@ -26,7 +26,7 @@ import {
   IDENTITY_VERIFY_KEY,
 } from "@/components/IdentityScreen";
 import { GlassIdentityStage } from "@/components/entry/GlassIdentityStage";
-import { ENTRY_REVEAL_KEY } from "@/components/entry/CinematicEntry";
+import { ENTRY_REVEAL_KEY } from "@/components/entry/entry-flags";
 import {
   JourneyCinematic,
   JOURNEY_FLAG_KEY,
