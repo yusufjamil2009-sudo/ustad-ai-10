@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowDown, ArrowRight, BrainCircuit, Medal, Swords } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import heroAsset from "@/assets/ustad-yusuf-hero.png.asset.json";
+import heroImage from "@/assets/ustad-yusuf-hero.jpg";
 import { FutureAiCore } from "@/components/FutureAiCore";
 import { CinematicEntry, markCinematicReveal } from "@/components/entry/CinematicEntry";
 import { Button } from "@/components/ui/button";
@@ -46,6 +46,12 @@ function LandingPage() {
 
   useEffect(() => {
     const nodes = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+    if (!("IntersectionObserver" in window)) {
+      nodes.forEach((node) => {
+        node.dataset['revealed'] = "true";
+      });
+      return;
+    }
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -66,7 +72,7 @@ function LandingPage() {
         <h1 id="landing-title" className="sr-only">USTAD AI by Yusuf Ali</h1>
         <figure className="landing-poster-wrap">
           <div className="landing-light-sweep" aria-hidden="true" />
-          <img src={heroAsset.url} alt="Yusuf Ali presenting the USTAD AI logo in a futuristic white technology environment" width={768} height={1152} fetchPriority="high" decoding="async" className="landing-poster" />
+          <img src={heroImage} alt="Yusuf Ali presenting the USTAD AI logo in a futuristic white technology environment" width={1024} height={1536} fetchPriority="high" decoding="async" className="landing-poster" />
         </figure>
         <a className="landing-scroll-cue" href="#about" aria-label="Scroll to learn about USTAD AI"><span>Discover</span><ArrowDown aria-hidden="true" /></a>
       </section>
