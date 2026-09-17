@@ -635,8 +635,8 @@
   will-change: transform, opacity;
 }
 
-.nx-chat-thinking-actor { right: clamp(0.5rem, 5vw, 4rem); }
-.nx-chat-delivery-actor { left: clamp(0.6rem, 6vw, 5rem); top: 57%; }
+.nx-chat-thinking-actor { left: clamp(0.5rem, 5vw, 4rem); }
+.nx-chat-delivery-actor { right: clamp(0.6rem, 6vw, 5rem); top: 57%; }
 
 .nx-chat-person {
   position: absolute;
@@ -725,7 +725,7 @@
   --nx-carry-y: 0px;
   --nx-front-x: 0px;
   --nx-front-y: 0px;
-  --nx-entry-shift: -7rem;
+  --nx-entry-shift: 7rem;
   transform-origin: 0 0;
   will-change: transform, opacity, filter;
   z-index: 14;
@@ -751,7 +751,7 @@
 }
 
 @keyframes nx-thinker-enter {
-  from { opacity: 0; transform: translate3d(135%, -50%, 0); }
+  from { opacity: 0; transform: translate3d(-135%, -50%, 0); }
   to { opacity: 1; transform: translate3d(0, -50%, 0); }
 }
 @keyframes nx-thinker-work {
@@ -764,11 +764,11 @@
 }
 @keyframes nx-thinker-exit {
   from { opacity: 1; transform: translate3d(0, -50%, 0); }
-  to { opacity: 0; transform: translate3d(145%, -50%, 0); }
+  to { opacity: 0; transform: translate3d(-145%, -50%, 0); }
 }
 @keyframes nx-delivery-enter {
-  from { opacity: 0; transform: translate3d(-150%, -50%, 0); }
-  70% { opacity: 1; transform: translate3d(0.25rem, -51%, 0); }
+  from { opacity: 0; transform: translate3d(150%, -50%, 0); }
+  70% { opacity: 1; transform: translate3d(-0.25rem, -51%, 0); }
   to { opacity: 1; transform: translate3d(0, -50%, 0); }
 }
 @keyframes nx-delivery-present {
@@ -846,7 +846,7 @@
 }
 @keyframes nx-delivery-exit {
   from { opacity: 1; transform: translate3d(0, -50%, 0); }
-  to { opacity: 0; transform: translate3d(-150%, -50%, 0); }
+  to { opacity: 0; transform: translate3d(150%, -50%, 0); }
 }
 
 @keyframes nx-courier-support {
@@ -925,8 +925,8 @@
   height: clamp(9.6rem, 25dvh, 15.5rem);
 }
 
-.nx-chat-thinking-actor { right: clamp(0.4rem, 4vw, 3rem); }
-.nx-chat-delivery-actor { left: clamp(0.45rem, 5vw, 3.5rem); top: 58%; }
+.nx-chat-thinking-actor { left: clamp(0.4rem, 4vw, 3rem); }
+.nx-chat-delivery-actor { right: clamp(0.45rem, 5vw, 3.5rem); top: 58%; }
 
 .nx-chat-person {
   width: 100%;
@@ -999,8 +999,8 @@
     width: clamp(3.7rem, 16vw, 4.6rem);
     height: clamp(8.2rem, 20dvh, 10.8rem);
   }
-  .nx-chat-thinking-actor { right: 0.35rem; top: 52%; }
-  .nx-chat-delivery-actor { left: 0.35rem; top: 58%; }
+  .nx-chat-thinking-actor { left: 0.35rem; top: 52%; }
+  .nx-chat-delivery-actor { right: 0.35rem; top: 58%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
