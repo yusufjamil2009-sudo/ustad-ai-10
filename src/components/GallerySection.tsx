@@ -34,6 +34,7 @@ import {
   downloadBlob,
   fetchImageBlob,
   shareGalleryUrl,
+  publicShareOrigin,
   copyText,
   buildZip,
   formatBytes,
