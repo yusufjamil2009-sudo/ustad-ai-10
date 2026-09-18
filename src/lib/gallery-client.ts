@@ -20,6 +20,28 @@ import { sanitizeZipEntryName, MAX_GALLERY_BYTES } from "./gallery-utils";
 export const GALLERY_MAX_DIM = 2048; // longest side; larger images are scaled down
 const WEBP_QUALITY = 0.85;
 
+/**
+ * Public origin for share links. Links must open for ANYONE with no login —
+ * the Lovable editor/preview host asks visitors to authenticate, so a link
+ * generated while the owner is inside the preview must point at the published
+ * site instead. On the published site itself the real origin is used.
+ */
+const PUBLISHED_ORIGIN = "https://ustad-ai-10.lovable.app";
+
+export function publicShareOrigin(): string {
+  if (typeof window === "undefined") return PUBLISHED_ORIGIN;
+  const { origin, hostname } = window.location;
+  if (
+    hostname.includes("id-preview--") ||
+    hostname.endsWith("-dev.lovable.app") ||
+    hostname === "localhost" ||
+    hostname === "127.0.0.1"
+  ) {
+    return PUBLISHED_ORIGIN;
+  }
+  return origin;
+}
+
 /** Hard limits that keep ZIP building memory-safe (Bug #1). */
 export const MAX_ZIP_ENTRIES = 200;
 export const MAX_ZIP_UNCOMPRESSED = 384 * 1024 * 1024; // ~384 MB uncompressed

@@ -34,6 +34,7 @@ import {
   downloadBlob,
   fetchImageBlob,
   shareGalleryUrl,
+  publicShareOrigin,
   copyText,
   buildZip,
   formatBytes,
@@ -151,11 +152,11 @@ export function GallerySection() {
       const res = (await galleryCreateShareFn({
         data: ids.length ? { token: "", imageIds: ids } : { token: "" },
       })) as unknown as GalleryShareResult;
-      // Always present the absolute URL built from the origin the user is
-      // actually viewing — never a hardcoded/fake domain (Bug #11).
-      const absolute = res.url.startsWith("http")
-        ? res.url
-        : `${window.location.origin}${res.url.startsWith("/") ? "" : "/"}${res.url}`;
+      // Share links must open publicly with no login: preview/editor hosts
+      // ask visitors to authenticate, so always build the link from the
+      // public published origin (Bug #11/#49).
+      const path = res.url.startsWith("http") ? new URL(res.url).pathname : res.url;
+      const absolute = `${publicShareOrigin()}${path.startsWith("/") ? "" : "/"}${path}`;
       setShareModal({ url: absolute, count: res.count });
     } catch (e) {
       toast.error((e as Error).message || "Could not generate the share URL.");

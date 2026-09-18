@@ -373,9 +373,22 @@ export async function createGalleryShare(
  * gets localhost, and a relative fallback can never mint a fake link.
  */
 export function publicShareUrl(shareToken: string, base?: string): string {
-  const origin =
+  let origin =
     base ??
     (typeof window !== "undefined" ? window.location.origin : process.env["APP_URL"]?.trim() || "");
+  // Share links open for ANYONE with no login. The Lovable preview/editor
+  // hosts ask visitors to authenticate, so a link minted there must point at
+  // the published site instead.
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  if (
+    !base &&
+    (host.includes("id-preview--") ||
+      host.endsWith("-dev.lovable.app") ||
+      host === "localhost" ||
+      host === "127.0.0.1")
+  ) {
+    origin = "https://ustad-ai-10.lovable.app";
+  }
   const path = `/gallery/share/${encodeURIComponent(shareToken)}`;
   if (!origin) return path;
   return `${origin.replace(/\/+$/, "")}${path}`;
