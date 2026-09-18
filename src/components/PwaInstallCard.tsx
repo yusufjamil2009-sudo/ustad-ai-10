@@ -70,6 +70,17 @@ export function PwaInstallCard() {
             {busy ? "Waiting for your browser…" : "Install USTAD AI"}
           </Button>
 
+          {state !== "available" && typeof window !== "undefined" && (window.location.hostname.includes("id-preview--") || window.location.hostname.endsWith("-dev.lovable.app") || window.self !== window.top) ? (
+            <a
+              href="https://ustad-ai-10.lovable.app/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+            >
+              <Download className="size-4" /> Open public app to install
+            </a>
+          ) : null}
+
           {state !== "available" ? (
             <div className="flex gap-2 rounded-lg border border-border bg-card/60 px-3 py-2 text-xs text-muted-foreground">
               <Info className="mt-0.5 size-4 shrink-0" />
