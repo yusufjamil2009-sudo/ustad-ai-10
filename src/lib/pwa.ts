@@ -181,9 +181,13 @@ export function registerServiceWorker(): void {
     void unregisterAppWorkers();
     return;
   }
-  window.addEventListener("load", () => {
+  const register = () => {
     void navigator.serviceWorker.register(SW_URL, { scope: "/" }).catch(() => {
       /* installability simply stays unavailable */
     });
-  });
+  };
+  // If the app hydrated after the load event already fired, waiting for
+  // "load" again would mean the SW never registers — register immediately.
+  if (document.readyState === "complete") register();
+  else window.addEventListener("load", register, { once: true });
 }
