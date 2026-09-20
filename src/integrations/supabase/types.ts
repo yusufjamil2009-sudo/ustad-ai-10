@@ -1784,6 +1784,174 @@ export type Database = {
           },
         ]
       }
+      github_activity: {
+        Row: {
+          branch: string | null
+          commit_sha: string | null
+          commit_url: string | null
+          created_at: string
+          detail: string | null
+          error_message: string | null
+          files_changed: number
+          files_created: number
+          files_deleted: number
+          files_read: number
+          guest_id: string
+          id: string
+          repo_full_name: string | null
+          status: string
+          step: string
+        }
+        Insert: {
+          branch?: string | null
+          commit_sha?: string | null
+          commit_url?: string | null
+          created_at?: string
+          detail?: string | null
+          error_message?: string | null
+          files_changed?: number
+          files_created?: number
+          files_deleted?: number
+          files_read?: number
+          guest_id: string
+          id?: string
+          repo_full_name?: string | null
+          status?: string
+          step: string
+        }
+        Update: {
+          branch?: string | null
+          commit_sha?: string | null
+          commit_url?: string | null
+          created_at?: string
+          detail?: string | null
+          error_message?: string | null
+          files_changed?: number
+          files_created?: number
+          files_deleted?: number
+          files_read?: number
+          guest_id?: string
+          id?: string
+          repo_full_name?: string | null
+          status?: string
+          step?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "github_activity_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      github_connections: {
+        Row: {
+          access_token_encrypted: string
+          created_at: string
+          github_avatar_url: string | null
+          github_login: string
+          github_user_id: number
+          guest_id: string
+          id: string
+          refresh_token_encrypted: string | null
+          refresh_token_expires_at: string | null
+          scopes: string
+          token_expires_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token_encrypted: string
+          created_at?: string
+          github_avatar_url?: string | null
+          github_login: string
+          github_user_id: number
+          guest_id: string
+          id?: string
+          refresh_token_encrypted?: string | null
+          refresh_token_expires_at?: string | null
+          scopes?: string
+          token_expires_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token_encrypted?: string
+          created_at?: string
+          github_avatar_url?: string | null
+          github_login?: string
+          github_user_id?: number
+          guest_id?: string
+          id?: string
+          refresh_token_encrypted?: string | null
+          refresh_token_expires_at?: string | null
+          scopes?: string
+          token_expires_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "github_connections_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: true
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      github_repo_selections: {
+        Row: {
+          created_at: string
+          default_branch: string
+          full_name: string
+          guest_id: string
+          html_url: string | null
+          id: string
+          is_private: boolean
+          owner_login: string
+          repo_id: number
+          repo_name: string
+          selected_branch: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          default_branch?: string
+          full_name: string
+          guest_id: string
+          html_url?: string | null
+          id?: string
+          is_private?: boolean
+          owner_login: string
+          repo_id: number
+          repo_name: string
+          selected_branch?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          default_branch?: string
+          full_name?: string
+          guest_id?: string
+          html_url?: string | null
+          id?: string
+          is_private?: boolean
+          owner_login?: string
+          repo_id?: number
+          repo_name?: string
+          selected_branch?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "github_repo_selections_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: true
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goals: {
         Row: {
           created_at: string
