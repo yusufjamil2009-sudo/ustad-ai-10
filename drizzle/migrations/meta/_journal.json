@@ -162,6 +162,13 @@
       "when": 1789615895234,
       "tag": "0022_revoke_public_execute_security_definer",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1789875899984,
+      "tag": "0023_create_github_integration",
+      "breakpoints": true
     }
   ]
 }
